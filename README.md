@@ -1,24 +1,47 @@
 # README
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+# Toolbelt Hiring Project 2020
 
-Things you may want to cover:
+A visualization dashboard that presents historical and forcast temperatures for BigCommerce HQ in Austin.
 
-* Ruby version
+**Ruby 2.6.4**
+**Rails 5.2.4.3**
 
-* System dependencies
 
-* Configuration
+## Getting Started
 
-* Database creation
+#### 1. Check out the repository
 
-* Database initialization
+```bash
+git clone git@github.com:davefogo/hiring-project.git
+```
 
-* How to run the test suite
+#### 2. Create and setup the database
 
-* Services (job queues, cache servers, search engines, etc.)
+```bash
+rails db:create
+rails db:migrate
+```
+#### 3. Start the rails server
 
-* Deployment instructions
+```bash
+rails s
+```
 
-* ...
+Now you can access the application at the URL http://localhost:3000
+
+## Running the tests
+
+```
+Example
+```
+
+
+## Deployment
+
+Deployed using Heroku
+
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
