@@ -16,13 +16,19 @@ A visualization dashboard that presents historical and forcast temperatures for 
 git clone git@github.com:davefogo/hiring-project.git
 ```
 
-#### 2. Create and setup the database
+#### 2. Install dependencies
+
+```bash
+bundle install
+```
+
+#### 3. Create and setup the database
 
 ```bash
 rails db:create
 rails db:migrate
 ```
-#### 3. Start the rails server
+#### 4. Start the rails server
 
 ```bash
 rails s
