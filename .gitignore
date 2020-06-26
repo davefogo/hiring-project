@@ -19,3 +19,9 @@
 
 # I don't want to show my secrets
 /config/secrets.yml
+
+# Ignore .DS_Store files
+.DS_Store
+app/.DS_Store
+app/*/.DS_Store
+app/*/*/.DS_Store
