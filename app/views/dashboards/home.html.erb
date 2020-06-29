@@ -61,7 +61,7 @@
             fixedTime = time.slice(0, 2) + ":" + time.slice(2)
           }
 
-          return fixedTime
+          return fixedTime;
         }
 
         $(function() {
@@ -70,6 +70,9 @@
               dataType: 'jsonp',
               async: false,
               success: function(data) {
+              let today = new Date()
+              let UTCOffsetMinutes = today.getTimezoneOffset();
+              let UTCOffset = UTCOffsetMinutes * 60000;
               let now = Date.now();
               let dataArray = []; 
               let days = data.data.weather;
@@ -84,11 +87,14 @@
                   let time = hourNormalizer(hours.time);
                   let dateTime = date + " " + time;
                   let unixTime = Date.parse(dateTime);
+                  let unixTimeCST = unixTime - UTCOffset;
                   let temp = parseInt(hours.tempF);
 
                   if (unixTime < now) {
-                    dataArray.push([unixTime, temp]);  
+                    dataArray.push([unixTimeCST, temp]);  
                   }
+
+                  console.log(dataArray);
                 }
               }
 
