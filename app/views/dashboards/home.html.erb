@@ -63,220 +63,81 @@
 
           return fixedTime
         }
-     
-        $.getJSON("http://api.worldweatheronline.com/premium/v1/past-weather.ashx?key=78cef3219b23471994422358202606&q=30.404251,-97.849442&format=json&date=2020-06-01&enddate=2020-06-30&tp=1&callback=?", function(data) {
-          let dataArray = []; 
-          let days = data.data.weather;
 
-          for (let i = 0 ; i < days.length; i++) {
-            let day = days[i];
-            let date = day.date.split("-").join("/");
-            let hourlyTemps = day.hourly;
-            
-            for (let j = 0; j < hourlyTemps.length; j++) {
-              let hours = hourlyTemps[j];
-              let time = hourNormalizer(hours.time);
-              let dateTime = date + " " + time;
-              let unixTime = Date.parse(dateTime);
-              let temp = parseInt(hours.tempF);
+        $(function() {
+            $.ajax({
+              url: "http://api.worldweatheronline.com/premium/v1/past-weather.ashx?key=78cef3219b23471994422358202606&q=30.404251,-97.849442&format=json&date=2020-06-01&enddate=2020-06-28&tp=1&callback=?",
+              dataType: 'jsonp',
+              async: false,
+              success: function(data) {
+              let dataArray = []; 
+              let days = data.data.weather;
 
-              dataArray.push([unixTime, temp]);
-            }
+              for (let i = 0 ; i < days.length; i++) {
+                let day = days[i];
+                let date = day.date.split("-").join("/");
+                let hourlyTemps = day.hourly;
+                
+                for (let j = 0; j < hourlyTemps.length; j++) {
+                  let hours = hourlyTemps[j];
+                  let time = hourNormalizer(hours.time);
+                  let dateTime = date + " " + time;
+                  let unixTime = Date.parse(dateTime);
+                  let temp = parseInt(hours.tempF);
+
+                  dataArray.push([unixTime, temp]);
+                }
+              }
+
+              let weatherForAustin = Highcharts.stockChart("container", {
+                rangeSelector : {
+                  selected: 1
+                },
+                title: {
+                  text: "Weather for Austin HQ"
+                },
+                series: [
+                    {
+                      name: "Austin HQ Historical",
+                      data: dataArray
+                    }     
+                  ]          
+              }, function(weatherForAustin) {
+              $.ajax({
+                url: "http://api.worldweatheronline.com/premium/v1/weather.ashx?key=78cef3219b23471994422358202606&q=30.404251,-97.849442&format=json&num_of_days=2&tp=1&callback=?",
+                dataType: 'jsonp',
+                async: false,
+                success: function(data2) {
+                  let dataArray2 = []; 
+                  let days = data2.data.weather;
+
+                  for (let i = 0 ; i < days.length; i++) {
+                    let day = days[i];
+                    let date = day.date.split("-").join("/");
+                    let hourlyTemps = day.hourly;
+                    
+                    for (let j = 0; j < hourlyTemps.length; j++) {
+                      let hours = hourlyTemps[j];
+                      let time = hourNormalizer(hours.time);
+                      let dateTime = date + " " + time;
+                      let unixTime = Date.parse(dateTime);
+                      let temp = parseInt(hours.tempF);
+
+                      dataArray2.push([unixTime, temp]);
+                    }
+                  }
+
+                  weatherForAustin.addSeries({
+                    name: "Austin HQ Forecast",
+                    data: dataArray2
+                  })           
+                } 
+              })
+            })
           }
-
-          Highcharts.stockChart("container", {
-            rangeSelector : {
-              selected: 1
-            },
-            title: {
-              text: "Weather for Austin HQ"
-            },
-            series: [
-              {
-                name: "Austin HQ Historical",
-                data: dataArray
-              }     
-            ]          
-          }) 
         })
+      })  
       </script>
-
-<!-- clean back up
-
-      <script>   
-        function hourNormalizer(time) {
-          let fixedTime;
-
-          if (time === "0") {
-            fixedTime = "0:00";
-          } else if (time.length === 3) {
-            fixedTime = time.slice(0, 1) + ":" + time.slice(1)
-          } else {
-            fixedTime = time.slice(0, 2) + ":" + time.slice(2)
-          }
-
-          return fixedTime
-        }
-     
-        $.getJSON("http://api.worldweatheronline.com/premium/v1/past-weather.ashx?key=78cef3219b23471994422358202606&q=30.404251,-97.849442&format=json&date=2020-06-01&enddate=2020-06-30&tp=1&callback=?", function(data) {
-          let dataArray = []; 
-          let days = data.data.weather;
-
-          for (let i = 0 ; i < days.length; i++) {
-            let day = days[i];
-            let date = day.date.split("-").join("/");
-            let hourlyTemps = day.hourly;
-            
-            for (let j = 0; j < hourlyTemps.length; j++) {
-              let hours = hourlyTemps[j];
-              let time = hourNormalizer(hours.time);
-              let dateTime = date + " " + time;
-              let unixTime = Date.parse(dateTime);
-              let temp = parseInt(hours.tempF);
-
-              dataArray.push([unixTime, temp]);
-            }
-          }
-
-          Highcharts.stockChart("container", {
-            rangeSelector : {
-              selected: 1
-            },
-            title: {
-              text: "Weather for Austin HQ"
-            },
-            series: [
-              {
-                name: "Austin HQ Historical",
-                data: dataArray
-              }     
-            ]          
-          }) 
-        })
-      </script> -->
-
-      <!-- second series first attempt <script>
-        $(function(){
-            function hourNormalizer(time) {
-              let fixedTime;
-
-              if (time === "0") {
-                fixedTime = "0:00";
-              } else if (time.length === 3) {
-                fixedTime = time.slice(0, 1) + ":" + time.slice(1)
-              } else {
-                fixedTime = time.slice(0, 2) + ":" + time.slice(2)
-              }
-
-              return fixedTime
-            }
-     
-          $.getJSON("http://api.worldweatheronline.com/premium/v1/past-weather.ashx?key=78cef3219b23471994422358202606&q=30.404251,-97.849442&format=json&date=2020-06-01&enddate=2020-06-30&tp=1&callback=?", function(data1) {
-
-            let dataArray1 = [] 
-            let days = data1.data.weather
-            for (let i = 0 ; i < days.length; i++) {
-              let day = days[i];
-              let date = day.date.split("-").join("/");
-              let hourlyTemps = day.hourly
-              
-              for (let j = 0; j < hourlyTemps.length; j++) {
-                let hours = hourlyTemps[j];
-                let time = hourNormalizer(hours.time);
-                let dateTime = date + " " + time;
-                let unixTime = Date.parse(dateTime);
-                let temp = parseInt(hours.tempF);
-
-                dataArray1.push([unixTime, temp]);
-
-              }
-            }
-
-            let chartOne = Highcharts.stockChart("container", {
-              rangeSelector : {
-                selected: 1
-              },
-
-              title: {
-                text: "Weather for Austin HQ"
-              },
-              series: [
-                {
-                  name: "Austin HQ Historical",
-                  data: dataArray1
-                }     
-              ]
-            })
-          })
-
-          $.getJSON("http://api.worldweatheronline.com/premium/v1/past-weather.ashx?key=78cef3219b23471994422358202606&q=30.404251,-97.849442&format=json&date=2020-06-01&enddate=2020-06-30&tp=1&callback=?", function(data2) {
-
-            let dataArray2 = [] 
-            let days = data2.data.weather
-            for (let i = 0 ; i < days.length; i++) {
-              let day = days[i];
-              let date = day.date.split("-").join("/");
-              let hourlyTemps = day.hourly
-            
-              for (let j = 0; j < hourlyTemps.length; j++) {
-                let hours = hourlyTemps[j];
-                let time = hourNormalizer(hours.time);
-                let dateTime = date + " " + time;
-                let unixTime = Date.parse(dateTime);
-                let temp = parseInt(hours.tempF);
-
-                dataArray2.push([unixTime, temp]);       
-              }
-            }
-
-            chartOne.addSeries({
-              name: "Austin HQ Forecast",
-              data: dataArray2
-            })
-          })
-
-           $.getJSON("http://api.worldweatheronline.com/premium/v1/past-weather.ashx?key=78cef3219b23471994422358202606&q=30.404251,-97.849442&format=json&date=2020-06-01&enddate=2020-06-30&tp=1&callback=?", function(data) {
-
-            let dataArray = [] 
-            let days = data.data.weather
-            for (let i = 0 ; i < days.length; i++) {
-              let day = days[i];
-              let date = day.date.split("-").join("/");
-              let hourlyTemps = day.hourly
-              
-              for (let j = 0; j < hourlyTemps.length; j++) {
-                let hours = hourlyTemps[j];
-                let time = hourNormalizer(hours.time);
-                let dateTime = date + " " + time;
-                let unixTime = Date.parse(dateTime);
-                let temp = parseInt(hours.tempF);
-
-                dataArray.push([unixTime, temp]);
-
-              }
-            }
-
-            Highcharts.stockChart("container2", {
-              rangeSelector : {
-                selected: 1
-              },
-
-              title: {
-                text: "3-Hour Highs and Lows"
-              },
-              series: [{
-                name: "Austin HQ Historical",
-                data: dataArray
-              }, 
-              {
-                name:"Austin HQ"
-              }
-
-              ]
-            })
-          })
-        })
-      </script> -->
       <a href="https://www.bigcommerce.com/"> 
         <%= image_tag('bc-logo-black.png', :alt => "bigCommerce Logo") %>
       </a> 
