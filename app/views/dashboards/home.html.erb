@@ -98,12 +98,14 @@
             let fixedTime;
 
             if (time === "0") {
-              return "00:00";
+              fixedTime = "0:00";
             } else if (time.length === 3) {
-              fixedTime = time.slice(0) + ":" + time.slice(1)
+              fixedTime = time.slice(0, 1) + ":" + time.slice(1)
             } else {
-              fixedTime = time.slice(1) + ":" + time.slice()
+              fixedTime = time.slice(0, 2) + ":" + time.slice(2)
             }
+
+            return fixedTime
           }
 
 
@@ -111,16 +113,17 @@
           let days = data.data.weather
           for (let i = 0 ; i < days.length; i++) {
             let day = days[i];
-            let date = day.date;
+            let date = day.date.split("-").join("/");
             let hourlyTemps = day.hourly
             
             for (let j = 0; j < hourlyTemps.length; j++) {
               let hours = hourlyTemps[j];
-              let time = hours.time;
+              let time = hourNormalizer(hours.time);
+              let dateTime = date + " " + time;
+              let unixTime = Date.parse(dateTime);
+              let temp = hours.tempF
 
-              console.log(date, time)
-              let unixTime = Date.parse('' + date + hourNormalizer(time))
-              let temp = hourlyTemps.tempF
+              // console.log(unixTime);
 
               series.push({"time" : unixTime, "temperature" : temp});
 
