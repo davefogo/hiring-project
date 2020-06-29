@@ -47,53 +47,9 @@
       </div>
       <div id="container" style="height: 400px;"></div>
       <div id="container2" style="height: 400px;"></div>
-      <script>
 
-
-
-               Highcharts.stockChart('container2', {
-              rangeSelector: {
-                  selected: 1
-              },
-
-              title: {
-                  text: 'AAPL Stock Price'
-              },
-
-              series: [{
-                  name: 'AAPL',
-                  data: [
-                    [1298851200000,100768479],
-                    [1298937600000,114032163],
-                    [1299024000000,150647189],
-                    [1299110400000,125196764],
-                    [1299196800000,113316483],
-                    [1299456000000,136530149],
-                    [1299542400000,89078955],
-                    [1299628800000,113349033],
-                    [1299715200000,126972055],
-                    [1299801600000,117770016]
-                    ],
-                  tooltip: {
-                    valueDecimals: 2
-                  }
-              }]
-          });
-      </script>
 
       <script>
-        
-        $.getJSON("http://api.worldweatheronline.com/premium/v1/past-weather.ashx?key=78cef3219b23471994422358202606&q=austin&format=json&date=2020-06-01&enddate=2020-06-27&tp=1&callback=?", function(data) {
-
-          // var chart = Highcharts.stockchart('container', {
-          //   title: {
-          //     text: 'Daily Weather Austin'
-          //   },
-
-          // series: [{
-          //   data: data.data.request
-          //   }]
-          // })
           function hourNormalizer(time) {
             let fixedTime;
 
@@ -107,9 +63,10 @@
 
             return fixedTime
           }
+   
+        $.getJSON("http://api.worldweatheronline.com/premium/v1/past-weather.ashx?key=78cef3219b23471994422358202606&q=30.404251,-97.849442&format=json&date=2020-06-01&enddate=2020-06-30&tp=1&callback=?", function(data) {
 
-
-          let series = [] 
+          let dataArray = [] 
           let days = data.data.weather
           for (let i = 0 ; i < days.length; i++) {
             let day = days[i];
@@ -121,19 +78,28 @@
               let time = hourNormalizer(hours.time);
               let dateTime = date + " " + time;
               let unixTime = Date.parse(dateTime);
-              let temp = hours.tempF
+              let temp = parseInt(hours.tempF);
 
-              // console.log(unixTime);
-
-              series.push({"time" : unixTime, "temperature" : temp});
+              dataArray.push([unixTime, temp]);
 
             }
           }
-          
-          console.log(series);
-      
-        })
 
+          Highcharts.stockChart("container", {
+            rangeSelector : {
+              selected: 1
+            },
+
+            title: {
+              text: "Weather for Austin HQ"
+            },
+            series: [{
+              name: "Austin HQ",
+              data: dataArray
+            }]
+          })
+          
+        })
       </script>
       <a href="https://www.bigcommerce.com/"> 
         <%= image_tag('bc-logo-black.png', :alt => "bigCommerce Logo") %>
