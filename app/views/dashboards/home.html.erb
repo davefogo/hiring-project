@@ -66,10 +66,11 @@
 
         $(function() {
             $.ajax({
-              url: "http://api.worldweatheronline.com/premium/v1/past-weather.ashx?key=78cef3219b23471994422358202606&q=30.404251,-97.849442&format=json&date=2020-06-01&enddate=2020-06-28&tp=1&callback=?",
+              url: "http://api.worldweatheronline.com/premium/v1/past-weather.ashx?key=78cef3219b23471994422358202606&q=30.404251,-97.849442&format=json&date=2020-06-01&enddate=2020-06-29&tp=1&callback=?",
               dataType: 'jsonp',
               async: false,
               success: function(data) {
+              let now = Date.now();
               let dataArray = []; 
               let days = data.data.weather;
 
@@ -85,7 +86,9 @@
                   let unixTime = Date.parse(dateTime);
                   let temp = parseInt(hours.tempF);
 
-                  dataArray.push([unixTime, temp]);
+                  if (unixTime < now) {
+                    dataArray.push([unixTime, temp]);  
+                  }
                 }
               }
 
@@ -123,7 +126,9 @@
                       let unixTime = Date.parse(dateTime);
                       let temp = parseInt(hours.tempF);
 
-                      dataArray2.push([unixTime, temp]);
+                      if (unixTime > now) {
+                        dataArray2.push([unixTime, temp]);  
+                      }
                     }
                   }
 
