@@ -66,13 +66,15 @@
         }
 
         $(function() {
-              let today = new Date()
+
+          let today = new Date()
               let UTCOffsetMinutes = today.getTimezoneOffset();
               let UTCOffset = UTCOffsetMinutes * 60000;
               let now = Date.now();
+              console.log('update charts')
 
             $.ajax({
-              url: "http://api.worldweatheronline.com/premium/v1/past-weather.ashx?key=78cef3219b23471994422358202606&q=30.404251,-97.849442&format=json&date=2020-06-01&enddate=2020-06-29&tp=1&callback=?",
+              url: "http://api.worldweatheronline.com/premium/v1/past-weather.ashx?key=5c868c1933b54b6685c10828203006&q=30.404251,-97.849442&format=json&date=2020-06-01&enddate=2020-06-29&tp=1&callback=?",
               dataType: 'jsonp',
               async: false,
               success: function(data) {
@@ -113,7 +115,7 @@
                   ]          
               }, function(weatherForAustin) {
               $.ajax({
-                url: "http://api.worldweatheronline.com/premium/v1/weather.ashx?key=78cef3219b23471994422358202606&q=30.404251,-97.849442&format=json&num_of_days=2&tp=1&callback=?",
+                url: "http://api.worldweatheronline.com/premium/v1/weather.ashx?key=5c868c1933b54b6685c10828203006&q=30.404251,-97.849442&format=json&num_of_days=2&tp=1&callback=?",
                 dataType: 'jsonp',
                 async: false,
                 success: function(data2) {
@@ -148,6 +150,93 @@
             })
           }
         })
+
+            let minutes = 30;
+            setInterval(function() {
+              let today = new Date()
+              let UTCOffsetMinutes = today.getTimezoneOffset();
+              let UTCOffset = UTCOffsetMinutes * 60000;
+              let now = Date.now();
+              console.log('update charts')
+
+            $.ajax({
+              url: "http://api.worldweatheronline.com/premium/v1/past-weather.ashx?key=5c868c1933b54b6685c10828203006&q=30.404251,-97.849442&format=json&date=2020-06-01&enddate=2020-06-29&tp=1&callback=?",
+              dataType: 'jsonp',
+              async: false,
+              success: function(data) {
+              let dataArray = []; 
+              let days = data.data.weather;
+
+              for (let i = 0 ; i < days.length; i++) {
+                let day = days[i];
+                let date = day.date.split("-").join("/");
+                let hourlyTemps = day.hourly;
+                
+                for (let j = 0; j < hourlyTemps.length; j++) {
+                  let hours = hourlyTemps[j];
+                  let time = hourNormalizer(hours.time);
+                  let dateTime = date + " " + time;
+                  let unixTime = Date.parse(dateTime);
+                  let unixTimeCST = unixTime - UTCOffset;
+                  let temp = parseInt(hours.tempF);
+
+                  if (unixTime < now) {
+                    dataArray.push([unixTimeCST, temp]);  
+                  }
+                }
+              }
+
+              let weatherForAustin = Highcharts.stockChart("container", {
+                rangeSelector : {
+                  selected: 1
+                },
+                title: {
+                  text: "Weather for Austin HQ"
+                },
+                series: [
+                    {
+                      name: "Austin HQ Historical",
+                      data: dataArray
+                    }     
+                  ]          
+              }, function(weatherForAustin) {
+              $.ajax({
+                url: "http://api.worldweatheronline.com/premium/v1/weather.ashx?key=5c868c1933b54b6685c10828203006&q=30.404251,-97.849442&format=json&num_of_days=2&tp=1&callback=?",
+                dataType: 'jsonp',
+                async: false,
+                success: function(data2) {
+                  let dataArray2 = []; 
+                  let days = data2.data.weather;
+
+                  for (let i = 0 ; i < days.length; i++) {
+                    let day = days[i];
+                    let date = day.date.split("-").join("/");
+                    let hourlyTemps = day.hourly;
+                    
+                    for (let j = 0; j < hourlyTemps.length; j++) {
+                      let hours = hourlyTemps[j];
+                      let time = hourNormalizer(hours.time);
+                      let dateTime = date + " " + time;
+                      let unixTime = Date.parse(dateTime);
+                      let unixTimeCST = unixTime - UTCOffset;
+                      let temp = parseInt(hours.tempF);
+
+                      if (unixTime > now) {
+                        dataArray2.push([unixTimeCST, temp]);  
+                      }
+                    }
+                  }
+
+                  weatherForAustin.addSeries({
+                    name: "Austin HQ Forecast",
+                    data: dataArray2
+                  })           
+                } 
+              })
+            })
+          }
+        })
+          }, 60000 * minutes)
       })  
       </script>
       <a href="https://www.bigcommerce.com/"> 
