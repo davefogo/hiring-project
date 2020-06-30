@@ -17,7 +17,7 @@ $ ->
   UTCOffset = UTCOffsetMinutes * 60000
   now = Date.now()
   minutes = 30
-
+  console.log 'refresh charts'
   $.ajax
     url: 'https://api.worldweatheronline.com/premium/v1/past-weather.ashx?key=<%= Rails.application.credentials.wwo[:wwo_key]%>&q=30.404251,-97.849442&format=json&date=2020-06-01&enddate=2020-06-30&tp=1&callback=?'
     dataType: 'jsonp'
@@ -102,7 +102,7 @@ $ ->
       return
   # historical chart 2
   $.ajax
-    url: 'https://api.worldweatheronline.com/premium/v1/past-weather.ashx?key=<%= Rails.application.credentials.wwo[:wwo_key]%>&q=30.404251,-97.849442&format=json&date=2020-06-01&enddate=2020-06-30&tp=1&callback=?'
+    url: 'https://api.worldweatheronline.com/premium/v1/past-weather.ashx?key=<%= Rails.application.credentials.wwo[:wwo_key]%>&q=30.404251,-97.849442&format=json&date=2020-06-01&enddate=2020-06-30&tp=3&callback=?'
     dataType: 'jsonp'
     async: false
     success: (data3) ->
@@ -112,20 +112,14 @@ $ ->
       while i < days.length
         day = days[i]
         date = day.date.split('-').join('/')
-        hourlyTemps = day.hourly
-        j = 0
-        while j < hourlyTemps.length
-          hours = hourlyTemps[j]
-          time = hourNormalizer(hours.time)
-          dateTime = date + ' ' + time
-          unixTime = Date.parse(dateTime)
-          unixTimeCST = unixTime - UTCOffset
-          temp = parseInt(hours.tempF)
-          dataArray3.push [
-            unixTimeCST
-            temp
-          ]
-          j++
+        maxT = day.maxtempF
+        unixTime = Date.parse(date)
+        unixTimeCST = unixTime - UTCOffset
+        console.log unixTimeCST, maxT
+        dataArray3.push [
+          unixTimeCST
+          parseInt(maxT)
+        ]
         i++
       weatherForAustin2 = Highcharts.stockChart('container2', {
         rangeSelector: selected: 1
@@ -137,7 +131,7 @@ $ ->
         } ]
       }, (weatherForAustin2) ->
         $.ajax
-          url: 'https://api.worldweatheronline.com/premium/v1/past-weather.ashx?key=<%= Rails.application.credentials.wwo[:wwo_key]%>&q=30.404251,-97.849442&format=json&date=2020-06-01&enddate=2020-06-30&tp=1&callback=?'
+          url: 'https://api.worldweatheronline.com/premium/v1/past-weather.ashx?key=<%= Rails.application.credentials.wwo[:wwo_key]%>&q=30.404251,-97.849442&format=json&date=2020-06-01&enddate=2020-06-30&tp=3&callback=?'
           dataType: 'jsonp'
           async: false
           success: (data4) ->
@@ -145,34 +139,21 @@ $ ->
             `var i`
             `var day`
             `var date`
-            `var hourlyTemps`
-            `var j`
-            `var hours`
-            `var time`
-            `var dateTime`
             `var unixTime`
             `var unixTimeCST`
-            `var temp`
             dataArray4 = []
             days = data4.data.weather
             i = 0
             while i < days.length
               day = days[i]
               date = day.date.split('-').join('/')
-              hourlyTemps = day.hourly
-              j = 0
-              while j < hourlyTemps.length
-                hours = hourlyTemps[j]
-                time = hourNormalizer(hours.time)
-                dateTime = date + ' ' + time
-                unixTime = Date.parse(dateTime)
-                unixTimeCST = unixTime - UTCOffset
-                temp = parseInt(hours.tempF)
-                dataArray4.push [
-                  unixTimeCST
-                  temp
-                ]
-                j++
+              minT = day.mintempF
+              unixTime = Date.parse(date)
+              unixTimeCST = unixTime - UTCOffset
+              dataArray4.push [
+                unixTimeCST
+                parseInt(minT)
+              ]
               i++
             weatherForAustin2.addSeries
               name: 'Low'
