@@ -14,7 +14,7 @@ $ ->
   UTCOffsetMinutes = today.getTimezoneOffset()
   UTCOffset = UTCOffsetMinutes * 60000
   now = Date.now()
-  console.log 'update charts'
+
   $.ajax
     url: 'http://api.worldweatheronline.com/premium/v1/past-weather.ashx?key=5c868c1933b54b6685c10828203006&q=30.404251,-97.849442&format=json&date=2020-06-01&enddate=2020-06-30&tp=1&callback=?'
     dataType: 'jsonp'
