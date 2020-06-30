@@ -17,7 +17,6 @@ $ ->
   UTCOffset = UTCOffsetMinutes * 60000
   now = Date.now()
   minutes = 30
-  console.log 'refresh charts'
   $.ajax
     url: 'https://api.worldweatheronline.com/premium/v1/past-weather.ashx?key=<%= Rails.application.credentials.wwo[:wwo_key]%>&q=30.404251,-97.849442&format=json&date=2020-06-01&enddate=2020-06-30&tp=1&callback=?'
     dataType: 'jsonp'
@@ -115,7 +114,6 @@ $ ->
         maxT = day.maxtempF
         unixTime = Date.parse(date)
         unixTimeCST = unixTime - UTCOffset
-        console.log unixTimeCST, maxT
         dataArray3.push [
           unixTimeCST
           parseInt(maxT)
@@ -269,7 +267,6 @@ $ ->
           maxT = day.maxtempF
           unixTime = Date.parse(date)
           unixTimeCST = unixTime - UTCOffset
-          console.log unixTimeCST, maxT
           dataArray3.push [
             unixTimeCST
             parseInt(maxT)
