@@ -66,7 +66,7 @@
         }
 
         $(function() {
-
+          //historical
           let today = new Date()
               let UTCOffsetMinutes = today.getTimezoneOffset();
               let UTCOffset = UTCOffsetMinutes * 60000;
@@ -74,7 +74,7 @@
               console.log('update charts')
 
             $.ajax({
-              url: "http://api.worldweatheronline.com/premium/v1/past-weather.ashx?key=5c868c1933b54b6685c10828203006&q=30.404251,-97.849442&format=json&date=2020-06-01&enddate=2020-06-29&tp=1&callback=?",
+              url: "http://api.worldweatheronline.com/premium/v1/past-weather.ashx?key=5c868c1933b54b6685c10828203006&q=30.404251,-97.849442&format=json&date=2020-06-01&enddate=2020-06-30&tp=1&callback=?",
               dataType: 'jsonp',
               async: false,
               success: function(data) {
@@ -107,9 +107,12 @@
                 title: {
                   text: "Weather for Austin HQ"
                 },
+                legend: {
+                  enabled: true
+                },
                 series: [
                     {
-                      name: "Austin HQ Historical",
+                      name: "Historical",
                       data: dataArray
                     }     
                   ]          
@@ -142,7 +145,7 @@
                   }
 
                   weatherForAustin.addSeries({
-                    name: "Austin HQ Forecast",
+                    name: "Forecast",
                     data: dataArray2
                   })           
                 } 
@@ -160,7 +163,7 @@
               console.log('update charts')
 
             $.ajax({
-              url: "http://api.worldweatheronline.com/premium/v1/past-weather.ashx?key=5c868c1933b54b6685c10828203006&q=30.404251,-97.849442&format=json&date=2020-06-01&enddate=2020-06-29&tp=1&callback=?",
+              url: "http://api.worldweatheronline.com/premium/v1/past-weather.ashx?key=5c868c1933b54b6685c10828203006&q=30.404251,-97.849442&format=json&date=2020-06-01&enddate=2020-06-30&tp=1&callback=?",
               dataType: 'jsonp',
               async: false,
               success: function(data) {
