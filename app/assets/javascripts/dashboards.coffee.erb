@@ -307,7 +307,7 @@ $ ->
         return
     #historical chart 2
     $.ajax
-      url: 'https://api.worldweatheronline.com/premium/v1/past-weather.ashx?key=<%= Rails.application.credentials.wwo[:wwo_key]%>&q=30.404251,-97.849442&format=json&date=2020-06-01&enddate=2020-07-01&tp=3&callback=?'
+      url: 'https://api.worldweatheronline.com/premium/v1/past-weather.ashx?key=<%= Rails.application.credentials.wwo[:wwo_key]%>&q=30.404251,-97.849442&format=json&date=2020-06-01&enddate=2020-07-01&tp=1&callback=?'
       dataType: 'jsonp'
       async: false
       success: (data3) ->
@@ -317,13 +317,35 @@ $ ->
         while i < days.length
           day = days[i]
           date = day.date.split('-').join('/')
-          maxT = day.maxtempF
-          unixTime = Date.parse(date)
-          unixTimeCST = unixTime - UTCOffset
-          dataArray3.push [
-            unixTimeCST
-            parseInt(maxT)
-          ]
+          hourlyTemps = day.hourly
+          intervalList = {}
+          j = 0
+          while j < hourlyTemps.length
+            hours = hourlyTemps[j]
+            time = hourNormalizer(hours.time)
+            temp = parseInt(hours.tempF)
+            hourOnly = undefined
+            if time.length > 3
+              hourOnly = time.slice(0, 3)
+            else
+              hourOnly = time[0]
+            #Build a list of temps observed over the 3 hours
+            if parseInt(hourOnly) % 3 == 0
+              dateTime = date + ' ' + time
+              unixTime = Date.parse(dateTime)
+              unixTimeCST = unixTime - UTCOffset
+              if intervalList.unixTimeCST
+                intervalList.unixTimeCST.push temp
+              else
+                intervalList.unixTimeCST = [ temp ]
+            max = intervalList.unixTimeCST.reduce((a, b) ->
+              Math.max a, b
+            )
+            dataArray3.push [
+              unixTimeCST
+              max
+            ]
+            j++
           i++
         weatherForAustin2 = Highcharts.stockChart('container2', {
           rangeSelector: selected: 1
@@ -335,7 +357,7 @@ $ ->
           } ]
         }, (weatherForAustin2) ->
           $.ajax
-            url: 'https://api.worldweatheronline.com/premium/v1/past-weather.ashx?key=<%= Rails.application.credentials.wwo[:wwo_key]%>&q=30.404251,-97.849442&format=json&date=2020-06-01&enddate=2020-07-01&tp=3&callback=?'
+            url: 'https://api.worldweatheronline.com/premium/v1/past-weather.ashx?key=<%= Rails.application.credentials.wwo[:wwo_key]%>&q=30.404251,-97.849442&format=json&date=2020-06-01&enddate=2020-07-01&tp=1&callback=?'
             dataType: 'jsonp'
             async: false
             success: (data4) ->
@@ -343,6 +365,14 @@ $ ->
               `var i`
               `var day`
               `var date`
+              `var hourlyTemps`
+              `var intervalList`
+              `var j`
+              `var hours`
+              `var time`
+              `var temp`
+              `var hourOnly`
+              `var dateTime`
               `var unixTime`
               `var unixTimeCST`
               dataArray4 = []
@@ -351,13 +381,35 @@ $ ->
               while i < days.length
                 day = days[i]
                 date = day.date.split('-').join('/')
-                minT = day.mintempF
-                unixTime = Date.parse(date)
-                unixTimeCST = unixTime - UTCOffset
-                dataArray4.push [
-                  unixTimeCST
-                  parseInt(minT)
-                ]
+                hourlyTemps = day.hourly
+                intervalList = {}
+                j = 0
+                while j < hourlyTemps.length
+                  hours = hourlyTemps[j]
+                  time = hourNormalizer(hours.time)
+                  temp = parseInt(hours.tempF)
+                  hourOnly = undefined
+                  #Build a list of temps observed over the 3 hours
+                  if time.length > 3
+                    hourOnly = time.slice(0, 3)
+                  else
+                    hourOnly = time[0]
+                  if parseInt(hourOnly) % 3 == 0
+                    dateTime = date + ' ' + time
+                    unixTime = Date.parse(dateTime)
+                    unixTimeCST = unixTime - UTCOffset
+                    if intervalList.unixTimeCST
+                      intervalList.unixTimeCST.push temp
+                    else
+                      intervalList.unixTimeCST = [ temp ]
+                  min = intervalList.unixTimeCST.reduce((a, b) ->
+                    Math.min a, b
+                  )
+                  dataArray4.push [
+                    unixTimeCST
+                    min
+                  ]
+                  j++
                 i++
               weatherForAustin2.addSeries
                 name: 'Low'
